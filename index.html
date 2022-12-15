@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Vanya's Puzzle</title>
+		<link rel="icon" href="./favicon.svg"/>
+        <link type="text/css" href="style.css" rel="stylesheet">
+		<script src="script.js"></script>
+    </head>
+    <body>
+		<div class="settings">
+			<div class="slider">
+			  <label for="f_width">Размер пазла</label>
+			  <input type="range" id="f_width" min="3" max="20" value="6">
+			  <div></div>
+			</div>
+			<div>
+				<input type="button" value="Загрузить" onclick="this.nextElementSibling.click()">
+				<input type="file" accept="image/*" style="display: none;"/>
+			</div>
+			<div>
+				<input type="button" value="Перемешать" name="shuffle">
+			</div>
+			<div class="hint">
+				<input type="button" value="Подсказка">
+				<img src='miraculous.png'>
+			</div>
+		</div>
+		<div class="container">
+			<div class="pieces"></div>
+			<div class="field"></div>
+		</div>
+	</body>
+</html>
