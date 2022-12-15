@@ -204,7 +204,6 @@ function moveWithAnimationToStart(el){
 	const coord = el.getBoundingClientRect()
 	el.style.left = temp_l
 	el.style.top = temp_t
-	console.log("toStart",temp_l,temp_t,coord.x,coord.y)
 	moveWithAnimationTo(el,coord.x,coord.y,"","")
 }
 
@@ -230,7 +229,6 @@ function shuffle_pieces(){
 		const index = pieces_indices[i]
 		const row = Math.floor(index/field_width)
 		const column = index%field_width
-		// el.tile_id = index
 		el.style.backgroundPosition = `${-tile_size*column}px ${tile_shift-tile_size*row}px`
 	}
 }
@@ -303,7 +301,6 @@ function onImageUpload(e){
 	img.src = link
 	
 	img.onload = function() {
-		console.log(this.width + 'x' + this.height);
 		image_width = this.width
 		image_height = this.height
 		document.body.style.setProperty("--pazzle-image",'URL('+link+')')
@@ -335,4 +332,4 @@ function start(){
 	onPuzzleWidthChange({"target":slider})
 }
 
-document.addEventListener("DOMContentLoaded",start)
+window.onload = start
