@@ -21,12 +21,6 @@ body{
 .field > div{
 	width: var(--cell-size);
 	height: var(--cell-size);
-	/* display: flex;
-	align-items: center;
-	justify-content: center;
-	box-sizing: border-box;
-	*/
-	/* border: 1px solid; */
 }
 .pieces{
 	display: grid;

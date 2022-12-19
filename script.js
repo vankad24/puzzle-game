@@ -78,7 +78,6 @@ function createPieces(){
 		d.ondragstart = ()=>{return false;}
 		d.addEventListener("pointerdown",onDown)
 		d.addEventListener("pointerup",onUp)
-		d.addEventListener("contextmenu", piece_right_click)
 		wrapper = document.createElement("div")
 		wrapper.appendChild(d)
 		pieces.appendChild(wrapper)
@@ -96,54 +95,61 @@ function onMove(event){
 	const cursorX = event.pageX
 	const cursorY = event.pageY
 	if (draggable.canMove(cursorX,cursorY)){
-		if (!draggable.moving && selected_piece!==draggable.el)select_piece(event.target)
+		if (!draggable.moving && selected_piece!==draggable.el)select_piece(draggable.el)
 		draggable.moveAt(cursorX,cursorY)
 	}
 }
 
 function onUp(event){
-	const cursorX = event.pageX
-	const cursorY = event.pageY
-	if (draggable.moving){
-		draggable.el.hidden = true
-		const el_below = document.elementFromPoint(cursorX, cursorY)
-		draggable.el.hidden = false
-		let type = 0
-		if (el_below && el_below.parentElement){
-			if (field_elements.includes(el_below))type = 2
-			else if (pieces_elements.includes(el_below))type = 1
+	if (event.button === 2){//right click
+		if (event.target.container){
+			if (event.target===selected_piece)select_piece(selected_piece)
+			moveWithAnimationToStart(event.target)
 		}
-		if(type===0 || (type===1 && el_below.container===undefined)){
-			moveWithAnimationToStart(draggable.el)
-		}else{
-			let to = el_below
-			if(type === 1){
-				to = el_below.container
-				if (draggable.el.container)moveWithAnimationToContainer(el_below, draggable.el.container)
-				else moveWithAnimationToStart(el_below)
-			}
-			moveWithAnimationToContainer(draggable.el, to)			
-		}
-		select_piece(event.target)
-		checkWin()
 	}else{
-		if (!selected_piece || (!selected_piece.container && !event.target.container) 
-			|| selected_piece===event.target)
-			select_piece(event.target)
-		else{
-			let el_with_container = selected_piece
-			let el_second = event.target
-			select_piece(selected_piece)
-			if (!el_with_container.container){
-				const temp = el_with_container
-				el_with_container = el_second
-				el_second = temp
+		const cursorX = event.pageX
+		const cursorY = event.pageY
+		if (draggable.moving){
+			draggable.el.hidden = true
+			const el_below = document.elementFromPoint(cursorX, cursorY)
+			draggable.el.hidden = false
+			let type = 0
+			if (el_below && el_below.parentElement){
+				if (field_elements.includes(el_below))type = 2
+				else if (pieces_elements.includes(el_below))type = 1
 			}
-			const temp_container = el_second.container
-			moveWithAnimationToContainer(el_second, el_with_container.container)
-			if (temp_container)moveWithAnimationToContainer(el_with_container, temp_container)
-			else moveWithAnimationToStart(el_with_container)
+			if(type===0 || (type===1 && el_below.container===undefined)){
+				moveWithAnimationToStart(draggable.el)
+			}else{
+				let to = el_below
+				if(type === 1){
+					to = el_below.container
+					if (draggable.el.container)moveWithAnimationToContainer(el_below, draggable.el.container)
+					else moveWithAnimationToStart(el_below)
+				}
+				moveWithAnimationToContainer(draggable.el, to)			
+			}
+			select_piece(event.target)
 			checkWin()
+		}else{
+			if (!selected_piece || (!selected_piece.container && !event.target.container) 
+				|| selected_piece===event.target)
+				select_piece(event.target)
+			else{
+				let el_with_container = selected_piece
+				let el_second = event.target
+				select_piece(selected_piece)
+				if (!el_with_container.container){
+					const temp = el_with_container
+					el_with_container = el_second
+					el_second = temp
+				}
+				const temp_container = el_second.container
+				moveWithAnimationToContainer(el_second, el_with_container.container)
+				if (temp_container)moveWithAnimationToContainer(el_with_container, temp_container)
+				else moveWithAnimationToStart(el_with_container)
+				checkWin()
+			}
 		}
 	}
 	
@@ -151,18 +157,10 @@ function onUp(event){
 }
 
 function field_click(e){
-	if (selected_piece){
+	if (!e.target.classList.contains("field") && selected_piece){
 		moveWithAnimationToContainer(selected_piece, e.target)
 		select_piece(selected_piece)
 		checkWin()
-	}
-}
-
-function piece_right_click(e){
-	e.preventDefault()
-	if (e.target.container){
-		if (e.target===selected_piece)select_piece(selected_piece)
-		moveWithAnimationToStart(e.target)
 	}
 }
 
@@ -226,6 +224,7 @@ function shuffle_pieces(){
 		const el = pieces_elements[i]
 		el.style.top = ''
 		el.style.left = ''
+		el.container = undefined
 		const index = pieces_indices[i]
 		const row = Math.floor(index/field_width)
 		const column = index%field_width
@@ -330,6 +329,7 @@ function start(){
 	slider.addEventListener("input", onPuzzleWidthChange)
 	initValues()
 	onPuzzleWidthChange({"target":slider})
+	document.querySelector(".container").oncontextmenu = ()=>{return false;}
 }
 
 window.onload = start
